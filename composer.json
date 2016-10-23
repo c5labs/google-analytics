@@ -1,0 +1,17 @@
+{
+    "name": "c5labs/google-analytics",
+    "description": "Adds Google Analytics overview & tracking code to your site.",
+    "type": "concrete5-package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Oliver Green",
+            "email": "oliver@c5labs.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "league/oauth2-client": "^1.4",
+        "league/oauth2-google": "^1.0"
+    }
+}
