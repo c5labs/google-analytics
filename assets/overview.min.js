@@ -145,6 +145,12 @@ gapi.analytics.ready(function() {
     {
         var timeout;
 
+        charts[i].instance.on('error', function(response) {
+            $('#'+charts[i].chart.container).html(
+                '<div class="loading"><span><i class="fa fa-spin fa-exclamation-triangle"></i>Error loading</span></div>'
+            );
+        });
+
         charts[i].instance.on('success', function(response) {
             var clearChart = function() {
                 $('#'+charts[i].chart.container).html(

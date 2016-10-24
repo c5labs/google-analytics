@@ -25,7 +25,7 @@
     <div class="row">
         <div class="col-lg-3 col-md-6">
             <div class="boxed hero-metric">
-                <div class="active-marker"></div>
+                <div id="activeUsersMarker" class="active-marker off"></div>
                 <div class="chart-container" id="activeUsers">
                     <div class="loading"><span><i class="fa fa-spin fa-refresh"></i>Fetching data</span></div>
                 </div>

@@ -182,7 +182,7 @@ class GoogleAnalyticsHelper
     {
         $config = $this->getConfiguration();
         
-        return isset($config['enable_tracking_code']);
+        return ! empty($config['enable_tracking_code']);
     }
 
     public function getTrackingCode()

@@ -61,6 +61,7 @@ div#ccm-toolbar > ul > li > a .ga-icon-wrapper i.fa {
 .ga-page .boxed.hero-metric .chart-container .loading {
   min-height: 80px;
   font-size: 1em;
+  margin-top: 28px;
 }
 .ga-page .boxed.hero-metric .active-marker {
   border-radius: 50%;
@@ -72,6 +73,11 @@ div#ccm-toolbar > ul > li > a .ga-icon-wrapper i.fa {
   right: 30px;
   -webkit-animation: flash 2s infinite;
   animation: flash 2s infinite;
+}
+.ga-page .boxed.hero-metric .active-marker.off {
+  background: #eee;
+  -webkit-animation: none;
+  animation: none;
 }
 .ga-page .boxed .chart-container .loading {
   min-height: 300px;
@@ -99,22 +105,28 @@ div#ccm-toolbar > ul > li > a .ga-icon-wrapper i.fa {
   0% {
     opacity: .3;
   }
+  49% {
+    opacity: .3;
+  }
   50% {
     opacity: 1;
   }
   100% {
-    opacity: .3;
+    opacity: 1;
   }
 }
 @keyframes flash {
   0% {
     opacity: .3;
   }
+  49% {
+    opacity: .3;
+  }
   50% {
     opacity: 1;
   }
   100% {
-    opacity: .3;
+    opacity: 1;
   }
 }
 .ga-page .boxed.no-profile {

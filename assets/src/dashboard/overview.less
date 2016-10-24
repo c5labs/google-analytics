@@ -45,6 +45,7 @@
             .chart-container .loading {
                 min-height: 80px;
                 font-size: 1em;
+                margin-top: 28px;
             }
 
             .active-marker {
@@ -56,6 +57,11 @@
                 top: 15px;
                 right: 30px;
                 animation: flash 2s infinite;
+
+                &.off {
+                    background: #eee;
+                    animation: none;
+                }
             }
         }
 
@@ -87,8 +93,9 @@
 
         @keyframes flash {
             0% { opacity: .3; }
+            49% { opacity: .3; }
             50% { opacity: 1; }
-            100% { opacity: .3; }
+            100% { opacity: 1; }
         }
 
         &.no-profile {
