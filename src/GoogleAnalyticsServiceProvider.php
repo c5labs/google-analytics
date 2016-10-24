@@ -19,7 +19,13 @@ class GoogleAnalyticsServiceProvider extends Provider
 {
     public function register()
     {
-        $this->app->singleton('google-analytics.client', function() use ($redirect_path) {
+        $this->app->singleton('google-analytics.helper', function() {
+            $config = Core::make(\Concrete\Core\Config\Repository\Repository::class);
+
+            return new GoogleAnalyticsHelper($config);
+        });
+
+        $this->app->singleton('google-analytics.client', function() {
             $params = array(
                 'applicationName'   => 'Concrete5 Google Analytics Addon',
                 'clientId'          =>  '460634522959-js9hc2psn2toa9fcel4hlntuok0oposn.apps.googleusercontent.com',
@@ -40,25 +46,43 @@ class GoogleAnalyticsServiceProvider extends Provider
         });
 
         \Events::addListener('on_page_view', function($event) {
+            $helper = \Core::make('google-analytics.helper');
             $page = $event->getPageObject();
-            $cp = new \Permissions($page);
-            $dh = \Loader::helper('concrete/dashboard');
 
-            if (isset($cp) && $cp->canViewToolbar() && (!$dh->inDashboard())) {
-                $config = Core::make(\Concrete\Core\Config\Repository\Repository::class);
-                $config = $config->get('concrete.seo.analytics.google', []);
-                $access_token = $config['oauth_token']['access_token'];
-                $dashboard_url = \URL::to('/dashboard/google-analytics');
-                // can we access the analytics page? if so show the button, otherwise hide it.
+            /*
+             * Add the toolbar item.
+             */
+            if ($helper->canViewToolbarButton()) {
                 // We also need to del with refreshing expired tokens
                 // And handle component errors
-                $template = require __DIR__.'/../elements/ga-toolbar-button-template.php';
 
+                /*
+                 * Queue the core CSS & JS assets.
+                 */
                 $v = \View::getInstance();
-                $v->addFooterItem($template);
-                $v->addFooterItem('<script>var ga_access_token = "'.$access_token.'", ga_profile_id = "'.$config['profile_id'].'";</script>');
-                $v->requireAsset('javascript', 'ga-embed-api/core');
-                $v->requireAsset('javascript', 'ga-embed-api/toolbar-button');
+                $helper->queueCoreAssets($v);
+            
+                /*
+                 * Add the toolbar icon.
+                 */
+                $icon = array(
+                    'icon' => 'refresh fa-spin',
+                    'label' => t('Google Analytics Dashboard'),
+                    'position' => 'right',
+                    'target' => $helper->isDashboardOverviewEnabled() ? '_self' : '_blank',
+                    'href' => $helper->isDashboardOverviewEnabled() ? $helper->getDashboardOverviewPageUrl() : 'http://www.google.com/analytics',
+                    'linkAttributes' => array('title'=>t('Google Analytics Dashboard'))
+                );
+                $mh = Core::make('helper/concrete/ui/menu');
+                $mh->addPageHeaderMenuItem('ga-button', 'google-analytics', $icon);
+            }
+
+            /*
+             * Enable tracking.
+             */
+            if ($helper->isTrackingEnabled()) {
+                $view = \View::getInstance();
+                $view->addHeaderItem($helper->getTrackingCode());
             }
         });
     }

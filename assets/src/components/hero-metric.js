@@ -13,10 +13,17 @@ gapi.analytics.ready(function() {
         render: function() {
             var opts = this.get();
             if (this.isRendered === false) {
-                var container = document.getElementById(opts.container);
-                container.innerHTML = this.template;
-
+                var template = this.template;
+                
                 gapi.client.analytics.data.ga.get(opts).then(function(response) {
+                    if (! response.result) {
+                        this.emit('error', {response: response});
+                        return;
+                    }
+
+                    var container = document.getElementById(opts.container);
+                    container.innerHTML = template;
+
                     value = parseFloat(response.result.totalsForAllResults[opts.metrics]).toFixed(1);
                     value = (opts.mutator ? opts.mutator(value) : value);
                     container.querySelector('.hero-metric-value').innerHTML = value;

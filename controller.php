@@ -155,6 +155,7 @@ class Controller extends Package
     {
         // Boot composer
         $this->bootComposer();
+
         // Register defined service providers
         $this->registerServiceProviders();
 
@@ -183,7 +184,7 @@ class Controller extends Package
 
         $al->register(
             'javascript',
-            'ga-embed-api/dashboard-settings',
+            'google-analytics/dashboard-settings',
             'assets/settings.min.js',
             [
                 'version' => '0.9.0',
@@ -196,7 +197,7 @@ class Controller extends Package
 
         $al->register(
             'javascript',
-            'ga-embed-api/dashboard-overview',
+            'google-analytics/dashboard-overview',
             'assets/overview.min.js',
             [
                 'version' => '0.9.0',
@@ -209,13 +210,26 @@ class Controller extends Package
 
         $al->register(
             'javascript',
-            'ga-embed-api/toolbar-button',
+            'google-analytics/toolbar-button',
             'assets/toolbar-button.min.js',
             [
                 'version' => '0.9.0',
                 'position' => \Concrete\Core\Asset\Asset::ASSET_POSITION_FOOTER,
                 'minify' => true,
                 'combine' => false,
+            ],
+            $this
+        );
+
+        $al->register(
+            'css',
+            'google-analytics/core',
+            'assets/bundle.min.css',
+            [
+                'version' => '0.9.0',
+                'position' => \Concrete\Core\Asset\Asset::ASSET_POSITION_HEADER,
+                'minify' => true,
+                'combine' => true,
             ],
             $this
         );
@@ -229,9 +243,11 @@ class Controller extends Package
      */
     public function install()
     {
-        // Add your custom logic here that needs to be executed BEFORE package install.
+        $this->bootComposer();
 
         $pkg = parent::install();
+
+        $this->registerServiceProviders();
 
         // Install the dashboard config page.
         $sp = \Concrete\Core\Page\Single::add('/dashboard/system/seo/google-analytics', $pkg);
@@ -240,12 +256,8 @@ class Controller extends Package
         ]);
 
         // Install the dashboard overview page.
-        $sp = \Concrete\Core\Page\Single::add('/dashboard/google-analytics', $pkg);
-        $sp->update([
-            'cName' => 'Google Analytics Overview',
-        ]);
-
-        // Add your custom logic here that needs to be executed AFTER package install.
+        $helper = Core::make('google-analytics.helper');
+        $helper->enableDashboardOverview();
 
         return $pkg;
     }

@@ -1,12 +1,18 @@
-$('#ccm-toolbar .ccm-toolbar-item-list').append($('#gaToolbarButtonTemplate').html());
-
 gapi.analytics.ready(function() {
+    /*
+     * Check that our oauth token is still valid.
+     */
+    if (! window.ga_access_token || window.ga_access_token.expires <= Math.round((new Date().getTime()) / 1000)) {
+        $('#gaActiveUsers').prev().removeClass('fa-spin fa-refresh').addClass('fa-exclamation-triangle');
+        return;
+    }
+
     /*
     * Authorize the user with an access token obtained server side.
     */
     gapi.analytics.auth.authorize({
         'serverAuth': {
-        'access_token': window.ga_access_token
+        'access_token': window.ga_access_token.access_token
         }
     });
 

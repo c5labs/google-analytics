@@ -17,8 +17,14 @@ elixir(function(mix) {
       './assets/src/dashboard/overview.js',
     ],'./assets/overview.min.js');
 
-        mix.scripts([
+    mix.scripts([
       './assets/src/toolbar-button.js',
     ],'./assets/toolbar-button.min.js');
+
+    mix.less([
+      './assets/src/toolbar-button.less',
+      './assets/src/dashboard/overview.less',
+      './assets/src/dashboard/settings.less',
+    ],'./assets/bundle.min.css');
 
 });

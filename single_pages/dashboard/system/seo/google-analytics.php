@@ -27,7 +27,29 @@ defined('C5_EXECUTE') or die("Access Denied.");
 <form id="configureForm" method="post" action="<?php echo $view->action('save_configuration'); ?>">
     <?php echo $this->controller->token->output('save_configuration'); ?>
     <fieldset>
-        <legend>Analytics Data Source</legend>
+        <legend>Settings</legend>
+
+        <div class="checkbox">
+            <label for="account">
+            <input name="concrete[seo][ga][enable_tracking_code]" type="checkbox" value="1" <?php echo (! empty($config['enable_tracking_code']) ? 'checked="checked"' : ''); ?>> Add tracking code for the selected profile to the site
+            </label>
+        </div>
+
+        <div class="checkbox">
+            <label for="account">
+            <input name="concrete[seo][ga][enable_dashboard_overview]" type="checkbox" value="1" <?php echo (! empty($config['enable_dashboard_overview']) ? 'checked="checked"' : ''); ?>> Enable the 'Google Analytics Overview' page in the dashboard
+            </label>
+        </div>
+
+        <div class="checkbox">
+            <label for="account">
+            <input name="concrete[seo][ga][show_toolbar_button]" type="checkbox" value="1" <?php echo (! empty($config['show_toolbar_button']) ? 'checked="checked"' : ''); ?>> Show real time site visitor count in toolbar
+            </label>
+        </div>
+
+    </fieldset>
+    <fieldset>
+        <legend>Analytics Account</legend>
         <label for="account">Google Account</label>
         <div style="margin-bottom: 20px;">
             <div style="float: left;">

@@ -6,21 +6,25 @@ use Concrete\Core\Page\Controller\DashboardPageController;
 
 class GoogleAnalytics extends DashboardPageController
 {
+    protected $helper;
+
+    public function __construct(\Concrete\Core\Page\Page $c)
+    {
+        parent::__construct($c);
+
+        $this->helper = Core::make('google-analytics.helper');
+    }
+
     public function view($status = '')
     {
-        $this->requireAsset('javascript', 'ga-embed-api/core');
-        $this->requireAsset('javascript', 'ga-embed-api/dashboard-settings');
-
         $api = Core::make('google-analytics.client');
-        $config = Core::make(\Concrete\Core\Config\Repository\Repository::class);
         $form_helper = Core::make('helper/form');
-        $config = $config->get('concrete.seo.analytics.google', []);
 
         // Show the successful save message.
         if ('token-saved' === $status) {
-            $this->set('message', ('Access token saved.'));
+            $this->set('message', t('Access token saved.'));
         } elseif ('settings-saved' === $status) {
-            $this->set('message', ('Settings saved.'));
+            $this->set('message', t('Settings saved.'));
         }
 
         if ($api->hasCurrentAccessToken()) {
@@ -33,14 +37,19 @@ class GoogleAnalytics extends DashboardPageController
             $this->set('profiles', $profiles);
         }
 
-        $this->set('config', $config);
+        $this->set('config', $this->helper->getConfiguration());
         $this->set('fh', $form_helper);
         $this->set('pageTitle', t('Google Analytics'));
+
+        $this->helper->queueCoreAssets($this);
+        $this->requireAsset('javascript', 'google-analytics/dashboard-settings');
     }
 
     public function save_token()
     {
         if ($this->isPost()) {
+            $this->helper = Core::make('google-analytics.helper');
+
             // Validate token.
             if (! $this->token->validate('save_token')) {
                 $this->error->add($this->token->getErrorMessage());
@@ -67,20 +76,13 @@ class GoogleAnalytics extends DashboardPageController
                 if (0 === count($profiles)) {
                     $this->error->add(t('This account has no Google Analytics profiles.'));
                 } else {
-                    $likenesses = [];
-                    
-                    foreach ($profiles['items'] as $key => $profile) {
-                        similar_text($_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'], $profile['websiteUrl'], $percent); 
-                        $likenesses[(string) $percent] = $key;
-                    }
+                    $profile = $this->helper->guessBestProfile($profiles['items']);
 
-                    $most_similar = max(array_keys($likenesses));
-
-                    $config = Core::make(\Concrete\Core\Config\Repository\Repository::class);
-                    $profile = $profiles['items'][$likenesses[$most_similar]];
-                    $config->save('concrete.seo.analytics.google.profile_id', $profile['id']);
-                    $config->save('concrete.seo.analytics.google.account_id', $profile['accountId']);
-                    $config->save('concrete.seo.analytics.google.property_id', $profile['webPropertyId']);
+                    $this->helper->saveConfigurationKeys([
+                        'profile_id' => $profile['id'],
+                        'account_id' => $profile['accountId'],
+                        'property_id' => $profile['webPropertyId']
+                    ]);
                 }
             }
 
@@ -98,18 +100,30 @@ class GoogleAnalytics extends DashboardPageController
     public function save_configuration()
     {
         if ($this->isPost()) {
+            $this->helper = Core::make('google-analytics.helper');
+
             // Validate token.
             if (! $this->token->validate('save_configuration')) {
                 $this->error->add($this->token->getErrorMessage());
             }
 
-            if (! $this->error->has()) {                
-                $config = $this->app->make(\Illuminate\Config\Repository::class);
+            if (! $this->error->has()) {
 
-                $data = $config->get('concrete.seo.analytics.google');
-                $data = array_merge($data, array_only($_POST['concrete']['seo']['ga'], ['profile_id', 'account_id', 'property_id']));
+                $defaults = ['show_toolbar_button' => true];
+                $keys = ['show_toolbar_button', 'enable_dashboard_overview', 'property_id', 'profile_id', 'account_id', 'enable_tracking_code'];
+                $data = array_only($_POST['concrete']['seo']['ga'], $keys);
 
-                $config->save('concrete.seo.analytics.google', $data);
+                $data['show_toolbar_button'] = isset($data['show_toolbar_button']);
+                $data['enable_dashboard_overview'] = isset($data['enable_dashboard_overview']);
+                $data['enable_tracking_code'] = isset($data['enable_tracking_code']);
+
+                if ($data['enable_dashboard_overview']) {
+                    $this->helper->enableDashboardOverview();
+                } else {
+                    $this->helper->disableDashboardOverview();
+                }
+
+                $this->helper->saveConfiguration($data, true, $defaults);
 
                 return $this->redirect('/dashboard/system/seo/google-analytics', 'settings-saved');
             }
@@ -124,13 +138,8 @@ class GoogleAnalytics extends DashboardPageController
             $this->error->add($this->token->getErrorMessage());
         }
 
-        if (! $this->error->has()) {     
-            $config = $this->app->make(\Illuminate\Config\Repository::class);
-
-            $data = $config->get('concrete.seo');
-            unset($data['analytics']['google']);
-
-            $config->save('concrete.seo', $data);
+        if (! $this->error->has()) {
+            $this->helper->forgetAccount();
 
             return $this->redirect('/dashboard/system/seo/google-analytics');
         }

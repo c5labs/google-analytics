@@ -1,12 +1,16 @@
 gapi.analytics.ready(function() {
     var charts = {};
 
+    if (! window.ga_access_token) {
+        return;
+    }
+
     /**
     * Authorize the user with an access token obtained server side.
     */
     gapi.analytics.auth.authorize({
         'serverAuth': {
-        'access_token': window.ga_access_token
+        'access_token': window.ga_access_token.access_token
         }
     });
 
@@ -128,8 +132,9 @@ gapi.analytics.ready(function() {
             'start-date': '30daysAgo',
             'end-date': 'yesterday',
             'metrics': 'ga:avgPageLoadTime',
-            'title': 'Page Load Time (secs)',
+            'title': 'Page Load Time',
             'container': 'avgPageLoad',
+            'mutator': function(value) { return value+'s'; },
         }
     };
 
@@ -138,11 +143,29 @@ gapi.analytics.ready(function() {
     */
     function bindSuccessListener(i)
     {
+        var timeout;
+
         charts[i].instance.on('success', function(response) {
-            $(window).resize(function() {
-                $('#'+charts[i].chart.container).empty();
+            var clearChart = function() {
+                $('#'+charts[i].chart.container).html(
+                    '<div class="loading"><span><i class="fa fa-spin fa-refresh"></i>Refreshing view</span></div>'
+                );
+
+                clearTimeout(timeout);
+                timeout = setTimeout(function() { bootChart(i); }, 500);
+            };
+
+            var bootChart = function(i) {
                 charts[i].chart.instance = new gapi.analytics.googleCharts.DataChart(charts[i]);
                 charts[i].chart.instance.execute();
+            };
+
+            $(window).resize(clearChart);
+            Concrete.event.subscribe('PanelClose', clearChart);
+            $('a').click(function() {
+                if ($('html').hasClass('ccm-panel-open')) {
+                    clearChart();
+                }
             });
         });
     }
