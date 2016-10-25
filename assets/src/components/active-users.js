@@ -49,7 +49,7 @@ gapi.analytics.ready(function() {
     },
 
     render_: function() {
-      let opts = this.get();
+      var opts = this.get();
 
       // Render the component inside the container.
       this.container = typeof opts.container == 'string' ?
@@ -57,10 +57,10 @@ gapi.analytics.ready(function() {
     },
 
     pollActiveUsers_: function() {
-      let options = this.get();
-      let pollingInterval = (options.pollingInterval || 5) * 1000;
-      let template = options.template || this.template;
-      let title = options.title || 'Active Users';
+      var options = this.get();
+      var pollingInterval = (options.pollingInterval || 5) * 1000;
+      var template = options.template || this.template;
+      var title = options.title || 'Active Users';
 
       if (isNaN(pollingInterval) || pollingInterval < 5000) {
         throw new Error('Frequency must be 5 seconds or more.');
@@ -88,9 +88,9 @@ gapi.analytics.ready(function() {
         this.hasRendered = true;
       }
 
-        let result = response.result;
-        let newValue = result.totalResults ? +result.rows[0][0] : 0;
-        let oldValue = this.activeUsers;
+        var result = response.result;
+        var newValue = result.totalResults ? +result.rows[0][0] : 0;
+        var oldValue = this.activeUsers;
 
         if (document.querySelector('#activeUsersMarker')) {
           if (newValue > 0) {
@@ -115,7 +115,7 @@ gapi.analytics.ready(function() {
     },
 
     onChange_: function(delta) {
-      let valueContainer = this.container.querySelector('.hero-metric-value');
+      var valueContainer = this.container.querySelector('.hero-metric-value');
       if (valueContainer) valueContainer.innerHTML = this.activeUsers;
 
       this.emit('change', {activeUsers: this.activeUsers, delta: delta});
