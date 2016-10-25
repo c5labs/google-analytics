@@ -157,9 +157,5 @@ div#ccm-toolbar > ul > li > a .ga-icon-wrapper i.fa {
 .ccm-ui .ga-settings label[for=account] {
   margin-top: 10px;
 }
-.ccm-ui .ga-settings #tracking_code {
-  width: 50%;
-  height: 200px;
-}
 
 /*# sourceMappingURL=bundle.min.css.map */

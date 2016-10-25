@@ -183,7 +183,7 @@ class GoogleAnalyticsHelper
 
         $sp = \Concrete\Core\Page\Single::add($this->getDashboardSettingsPagePath(), $package);
         $sp->update([
-            'cName' => 'Google Analytics',
+            'cName' => t('Google Analytics'),
         ]);
     }
 
@@ -227,7 +227,7 @@ class GoogleAnalyticsHelper
             $package = Package::getByHandle($this->getPackageHandle());
             $sp = \Concrete\Core\Page\Single::add($page_path, $package);
             $sp->update([
-                'cName' => 'Google Analytics Overview',
+                'cName' => t('Google Analytics Overview'),
             ]);
         }
     }

@@ -86,7 +86,8 @@ gapi.analytics.ready(function() {
         opts: {
             'ids': 'ga:'+window.ga_profile_id,
             'container': 'activeUsers',
-            'pollingInterval': 5
+            'pollingInterval': 5,
+            'title':  window.component_translations.activeUsers
         }
     };
 
@@ -100,7 +101,7 @@ gapi.analytics.ready(function() {
             'start-date': '30daysAgo',
             'end-date': 'yesterday',
             'metrics': 'ga:bounceRate',
-            'title': 'Bounce Rate',
+            'title': window.component_translations.bounceRate,
             'container': 'bounceRate',
             'mutator': function(value) { return value+'%'; },
         }
@@ -116,7 +117,7 @@ gapi.analytics.ready(function() {
             'start-date': '30daysAgo',
             'end-date': 'yesterday',
             'metrics': 'ga:avgSessionDuration',
-            'title': 'Visit Duration (mins)',
+            'title': window.component_translations.visitDuration,
             'container': 'avgVisitDuration',
             'mutator': function(value) { return parseFloat(value / 60).toFixed(2); },
         }
@@ -132,7 +133,7 @@ gapi.analytics.ready(function() {
             'start-date': '30daysAgo',
             'end-date': 'yesterday',
             'metrics': 'ga:avgPageLoadTime',
-            'title': 'Page Load Time',
+            'title':  window.component_translations.pageLoadTime,
             'container': 'avgPageLoad',
             'mutator': function(value) { return value+'s'; },
         }
