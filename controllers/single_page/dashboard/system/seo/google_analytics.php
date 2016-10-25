@@ -1,6 +1,6 @@
 <?php
 /**
- * Google Analytics Settings Page Controller
+ * Google Analytics Settings Page Controller.
  *
  * @author   Oliver Green <oliver@c5labs.com>
  * @license  See attached license file
@@ -44,8 +44,7 @@ class GoogleAnalytics extends DashboardPageController
     /**
      * Setup the view template.
      * 
-     * @param  string $status
-     * @return void
+     * @param string $status
      */
     public function view($status = '')
     {
@@ -54,9 +53,7 @@ class GoogleAnalytics extends DashboardPageController
         // Show the successful save messages.
         if ('token-saved' === $status) {
             $this->set('message', t('Access token saved.'));
-        } 
-
-        elseif ('settings-saved' === $status) {
+        } elseif ('settings-saved' === $status) {
             $this->set('message', t('Settings saved.'));
         }
 
@@ -88,32 +85,30 @@ class GoogleAnalytics extends DashboardPageController
     /**
      * Save Token
      * Initial form post after authorising account.
-     * 
-     * @return void
      */
     public function save_token()
     {
         if ($this->isPost()) {
             // Validate token.
-            if (! $this->token->validate('save_token')) {
+            if (!$this->token->validate('save_token')) {
                 $this->error->add($this->token->getErrorMessage());
             }
 
             $data = array_only($this->post('concrete')['seo']['ga'], ['auth_code']);
 
-            if (! isset($data['auth_code'])) {
+            if (!isset($data['auth_code'])) {
                 $this->error->add(t('The oAuth token is not valid.'));
             }
 
             // Exchange the auth code for an access token.
             $this->api->getAccessToken('authorization_code', [
-                'code' => $data['auth_code']
+                'code' => $data['auth_code'],
             ]);
 
             // If the exchange was not sucessful.
-            if (! $this->api->hasCurrentAccessToken()) {
+            if (!$this->api->hasCurrentAccessToken()) {
                 $this->error->add(t('Failed to exchange authorization token for access token.'));
-            } 
+            }
 
             // If the exchange was sucessful and we have a valid access token.
             else {
@@ -123,7 +118,7 @@ class GoogleAnalytics extends DashboardPageController
                 // The authorised account has no profiles.
                 if (0 === count($profiles)) {
                     $this->error->add(t('This account has no Google Analytics profiles.'));
-                } 
+                }
 
                 // Best guess the profile from the availble list and set the default the configuration.
                 else {
@@ -132,7 +127,7 @@ class GoogleAnalytics extends DashboardPageController
                     $config = $this->helper->getDefaultConfiguration([
                         'profile_id' => $profile['id'],
                         'account_id' => $profile['accountId'],
-                        'property_id' => $profile['webPropertyId']
+                        'property_id' => $profile['webPropertyId'],
                     ]);
 
                     $this->helper->saveConfigurationKeys($config);
@@ -141,8 +136,9 @@ class GoogleAnalytics extends DashboardPageController
 
             // If we don't have any errors redirect to the settings form, otherwise 
             // show the authorisation form and the errors.
-            if (! $this->error->has()) {
+            if (!$this->error->has()) {
                 $this->api->saveCurrentAccessToken();
+
                 return $this->redirect($this->helper->getDashboardSettingsPagePath(), 'token-saved');
             }
         }
@@ -152,21 +148,19 @@ class GoogleAnalytics extends DashboardPageController
 
     /**
      * Save the configuration form.
-     * 
-     * @return void
      */
     public function save_configuration()
     {
         if ($this->isPost()) {
             // Validate token.
-            if (! $this->token->validate('save_configuration')) {
+            if (!$this->token->validate('save_configuration')) {
                 $this->error->add($this->token->getErrorMessage());
             }
 
-            if (! $this->error->has()) {
+            if (!$this->error->has()) {
                 $defaults = $this->helper->getDefaultConfiguration();
                 $keys = [
-                    'show_toolbar_button', 'enable_dashboard_overview', 'property_id', 
+                    'show_toolbar_button', 'enable_dashboard_overview', 'property_id',
                     'profile_id', 'account_id', 'enable_tracking_code', 'no_track_groups',
                 ];
                 $data = array_only($_POST['concrete']['seo']['ga'], $keys);
@@ -194,17 +188,15 @@ class GoogleAnalytics extends DashboardPageController
 
     /**
      * Unassociate an Google account from the addon.
-     * 
-     * @return void
      */
     public function remove_account()
     {
         // Validate token.
-        if (! $this->token->validate('remove_account')) {
+        if (!$this->token->validate('remove_account')) {
             $this->error->add($this->token->getErrorMessage());
         }
 
-        if (! $this->error->has()) {
+        if (!$this->error->has()) {
             $this->helper->forgetAccount();
 
             return $this->redirect($this->helper->getDashboardSettingsPagePath());

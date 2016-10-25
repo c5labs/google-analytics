@@ -1,6 +1,6 @@
 <?php
 /**
- * Google Analytics Asset Service Provider
+ * Google Analytics Asset Service Provider.
  *
  * @author   Oliver Green <oliver@c5labs.com>
  * @license  See attached license file

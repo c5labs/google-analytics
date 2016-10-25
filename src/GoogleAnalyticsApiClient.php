@@ -1,6 +1,6 @@
 <?php
 /**
- * Google Analytics API Client
+ * Google Analytics API Client.
  *
  * @author   Oliver Green <oliver@c5labs.com>
  * @license  See attached license file
@@ -9,7 +9,6 @@ namespace Concrete\Package\GoogleAnalytics\Src;
 
 use Exception;
 use Concrete\Core\Cache\Cache;
-use Core;
 use Illuminate\Config\Repository;
 use League\OAuth2\Client\Grant\RefreshToken;
 use League\OAuth2\Client\Token\AccessToken;
@@ -63,12 +62,13 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
     /**
      * Default cache TTL.
      *
-     * @var integer
+     * @var int
      */
     protected $cache_ttl = 3600;
 
     /**
      * Constructor.
+     *
      * @param array                         $options
      * @param array                         $collaborators
      * @param \Illuminate\Config\Repository $config
@@ -110,11 +110,11 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
     /**
      * Have we got a valid current access token?
      *
-     * @return boolean
+     * @return bool
      */
     public function hasCurrentAccessToken()
     {
-        if (empty($this->access_token) || ! ($this->access_token instanceof AccessToken)) {
+        if (empty($this->access_token) || !($this->access_token instanceof AccessToken)) {
             return false;
         }
 
@@ -155,7 +155,7 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
     /**
      * Is there an access token saved in configuration?
      *
-     * @return boolean
+     * @return bool
      */
     public function hasSavedAccessToken()
     {
@@ -165,8 +165,9 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
     /**
      * Gets or refreshes an access token from Google.
      *
-     * @param  mixed $grant
-     * @param  array  $options
+     * @param mixed $grant
+     * @param array $options
+     *
      * @return AccessToken
      */
     public function getAccessToken($grant, array $options = [])
@@ -199,8 +200,9 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
     /**
      * Make a request to the analytics API endpoint.
      * 
-     * @param  string $resource 
-     * @param  string $method   
+     * @param string $resource
+     * @param string $method
+     *
      * @return mixed
      */
     public function resource($resource, $method = self::METHOD_GET)
@@ -217,9 +219,9 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
     {
         $fields = array_merge($this->defaultUserFields, $this->userFields);
 
-        $url = 'https://www.googleapis.com/plus/v1/people/me?' . http_build_query([
+        $url = 'https://www.googleapis.com/plus/v1/people/me?'.http_build_query([
             'fields' => implode(',', $fields),
-            'alt'    => 'json',
+            'alt' => 'json',
         ]);
 
         return $this->request($url, self::METHOD_GET);
@@ -228,24 +230,25 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
     /**
      * Make a request to the an endpoint.
      * 
-     * @param  string $url    
-     * @param  string $method 
+     * @param string $url
+     * @param string $method
+     *
      * @return mixed
      */
     public function request($url, $method)
     {
         // Oops, we have no token set.
-        if (! $this->hasCurrentAccessToken()) {
+        if (!$this->hasCurrentAccessToken()) {
             throw new Exception('No access token set.');
-        } 
+        }
 
         // Refresh the current access token if it has expired before making the call.
         elseif ($this->getCurrentAccessToken()->hasExpired()) {
             $this->getAccessToken(new RefreshToken(), [
-                'refresh_token' => $this->getCurrentAccessToken()->getRefreshToken()
+                'refresh_token' => $this->getCurrentAccessToken()->getRefreshToken(),
             ]);
 
-            if (! $this->saveCurrentAccessToken()) {
+            if (!$this->saveCurrentAccessToken()) {
                 throw new Exception('Failed to refresh access token.');
             }
         }
@@ -259,7 +262,7 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
         // We have no cache so make the request and cache it.
         if ($item->isMiss()) {
             $request = $this->getAuthenticatedRequest(
-                $method, 
+                $method,
                 $url,
                 $access_token['access_token']
             );

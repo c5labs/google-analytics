@@ -1,6 +1,6 @@
 <?php
 /**
- * Google Analytics Service Provider
+ * Google Analytics Service Provider.
  *
  * @author   Oliver Green <oliver@c5labs.com>
  * @license  See attached license file
@@ -18,8 +18,6 @@ class GoogleAnalyticsServiceProvider extends Provider
 {
     /**
      * Register the services.
-     * 
-     * @return void
      */
     public function register()
     {
@@ -32,12 +30,10 @@ class GoogleAnalyticsServiceProvider extends Provider
 
     /**
      * Register the helper class.
-     * 
-     * @return void
      */
     public function registerHelper()
     {
-        $this->app->singleton('google-analytics.helper', function() {
+        $this->app->singleton('google-analytics.helper', function () {
             $config = Core::make(\Concrete\Core\Config\Repository\Repository::class);
 
             return new GoogleAnalyticsHelper($config);
@@ -46,18 +42,16 @@ class GoogleAnalyticsServiceProvider extends Provider
 
     /**
      * Register the API client.
-     * 
-     * @return void
      */
     public function registerApiClient()
     {
-        $this->app->singleton('google-analytics.client', function() {
+        $this->app->singleton('google-analytics.client', function () {
             $params = array(
-                'applicationName'   => 'Concrete5 Google Analytics Addon',
-                'clientId'          =>  '460634522959-js9hc2psn2toa9fcel4hlntuok0oposn.apps.googleusercontent.com',
-                'clientSecret'      => 'mNb3AlCwAvXm2QOfl7qS7oq_',
-                'redirectUri'       => 'urn:ietf:wg:oauth:2.0:oob',
-                'scopes'            => [
+                'applicationName' => 'Concrete5 Google Analytics Addon',
+                'clientId' => '460634522959-js9hc2psn2toa9fcel4hlntuok0oposn.apps.googleusercontent.com',
+                'clientSecret' => 'mNb3AlCwAvXm2QOfl7qS7oq_',
+                'redirectUri' => 'urn:ietf:wg:oauth:2.0:oob',
+                'scopes' => [
                     'https://www.googleapis.com/auth/analytics.readonly',
                     'email',
                     'openid',
@@ -74,8 +68,6 @@ class GoogleAnalyticsServiceProvider extends Provider
 
     /**
      * Register the tracking code injection handler.
-     * 
-     * @return void
      */
     public function injectTrackingCode()
     {
@@ -92,8 +84,6 @@ class GoogleAnalyticsServiceProvider extends Provider
      *
      * @todo  We also need to deal with refreshing expired tokens
      * @todo  handle component errors
-     * 
-     * @return  void
      */
     public function addToolbarIcon()
     {
@@ -102,14 +92,14 @@ class GoogleAnalyticsServiceProvider extends Provider
         if ($helper->canViewToolbarButton()) {
             $v = \View::getInstance();
             $helper->queueCoreAssets($v);
-        
+
             $icon = array(
                 'icon' => 'refresh fa-spin',
                 'label' => t('Google Analytics Dashboard'),
                 'position' => 'right',
                 'target' => $helper->isDashboardOverviewEnabled() ? '_self' : '_blank',
                 'href' => $helper->isDashboardOverviewEnabled() ? $helper->getDashboardOverviewPageUrl() : 'http://www.google.com/analytics',
-                'linkAttributes' => array('title'=>t('Google Analytics Dashboard'))
+                'linkAttributes' => array('title' => t('Google Analytics Dashboard')),
             );
             $mh = Core::make('helper/concrete/ui/menu');
             $mh->addPageHeaderMenuItem('ga-button', 'google-analytics', $icon);

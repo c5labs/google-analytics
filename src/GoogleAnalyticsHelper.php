@@ -1,6 +1,6 @@
 <?php
 /**
- * Google Analytics Helper Class
+ * Google Analytics Helper Class.
  *
  * @author   Oliver Green <oliver@c5labs.com>
  * @license  See attached license file
@@ -49,13 +49,14 @@ class GoogleAnalyticsHelper
     /**
      * Get the addons default configuration.
      *
-     * @param  array  $additional_defaults
+     * @param array $additional_defaults
+     *
      * @return array
      */
     public function getDefaultConfiguration($additional_defaults = [])
     {
         $defaults = [
-            'show_toolbar_button' => true, 'no_track_groups' => [], 
+            'show_toolbar_button' => true, 'no_track_groups' => [],
             'enable_dashboard_overview' => true,
         ];
 
@@ -65,7 +66,8 @@ class GoogleAnalyticsHelper
     /**
      * Get the current configuration.
      *
-     * @param  array  $defaults
+     * @param array $defaults
+     *
      * @return array
      */
     public function getConfiguration($defaults = [])
@@ -76,9 +78,10 @@ class GoogleAnalyticsHelper
     /**
      * Save a data array to configuration.
      *
-     * @param  array  $data
-     * @param  boolean $merge
-     * @param  array   $defaults
+     * @param array $data
+     * @param bool  $merge
+     * @param array $defaults
+     *
      * @return bool
      */
     public function saveConfiguration(array $data, $merge = true, $defaults = [])
@@ -94,8 +97,9 @@ class GoogleAnalyticsHelper
     /**
      * Save a value to a specific configuration key.
      *
-     * @param  string $key
-     * @param  mixed $value
+     * @param string $key
+     * @param mixed  $value
+     *
      * @return bool
      */
     public function saveConfigurationKey($key, $value)
@@ -106,8 +110,7 @@ class GoogleAnalyticsHelper
     /**
      * Save an array of keys & values to configuration.
      * 
-     * @param  array $data 
-     * @return void
+     * @param array $data
      */
     public function saveConfigurationKeys(array $data)
     {
@@ -118,8 +121,6 @@ class GoogleAnalyticsHelper
 
     /**
      * Remove the current token, account, profile & property configuration.
-     * 
-     * @return void
      */
     public function forgetAccount()
     {
@@ -175,8 +176,6 @@ class GoogleAnalyticsHelper
 
     /**
      * Install the configuration page.
-     * 
-     * @return void
      */
     public function installConfigurationPage()
     {
@@ -191,7 +190,7 @@ class GoogleAnalyticsHelper
     /**
      * Is the dashboard overview page enabled?
      * 
-     * @return boolean
+     * @return bool
      */
     public function isDashboardOverviewEnabled()
     {
@@ -206,8 +205,6 @@ class GoogleAnalyticsHelper
 
     /**
      * Disable the dashboard overview page.
-     * 
-     * @return void
      */
     public function disableDashboardOverview()
     {
@@ -220,15 +217,13 @@ class GoogleAnalyticsHelper
 
     /**
      * Enable the dashboard overview page.
-     * 
-     * @return void
      */
     public function enableDashboardOverview()
     {
         $page_path = $this->getDashboardOverviewPagePath();
         $page = Page::getByPath($page_path);
 
-        if (! $page->getCollectionID()) {
+        if (!$page->getCollectionID()) {
             $package = Package::getByHandle($this->getPackageHandle());
             $sp = \Concrete\Core\Page\Single::add($page_path, $package);
             $sp->update([
@@ -246,11 +241,11 @@ class GoogleAnalyticsHelper
     {
         $page = Page::getByPath($this->getDashboardOverviewPagePath());
 
-        if (! $page->getCollectionID()) {
+        if (!$page->getCollectionID()) {
             return true;
         }
 
-        if (! \User::isLoggedIn()) {
+        if (!\User::isLoggedIn()) {
             return false;
         }
 
@@ -261,21 +256,18 @@ class GoogleAnalyticsHelper
 
     /**
      * Can the current user view the toolbar button?
-     * 
-     * @return void
      */
     public function canViewToolbarButton()
     {
         $config = $this->getConfiguration();
 
-        return $this->canViewAnalytics() && ! empty($config['show_toolbar_button']);
+        return $this->canViewAnalytics() && !empty($config['show_toolbar_button']);
     }
 
     /**
      * Queue the addons core assets to a view.
      * 
-     * @param  mixed $o
-     * @return void
+     * @param mixed $o
      */
     public function queueCoreAssets($o)
     {
@@ -295,7 +287,8 @@ class GoogleAnalyticsHelper
      * Guess the best profile to use from a list of profiles 
      * by looking at the current host name.
      * 
-     * @param  array $profiles
+     * @param array $profiles
+     *
      * @return array $profile
      */
     public function bestGuessProfile($profiles)
@@ -315,19 +308,20 @@ class GoogleAnalyticsHelper
     /**
      * Is tracking enabled in the configuration?
      * 
-     * @return boolean
+     * @return bool
      */
     public function isTrackingEnabled()
     {
         $config = $this->getConfiguration();
 
-        return ! empty($config['enable_tracking_code']);
+        return !empty($config['enable_tracking_code']);
     }
 
     /**
      * Should we track a specific user?
      * 
-     * @param  User $user
+     * @param User $user
+     *
      * @return bool
      */
     public function shouldTrack($user)

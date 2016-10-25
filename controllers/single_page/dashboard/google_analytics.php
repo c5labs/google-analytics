@@ -1,6 +1,6 @@
 <?php
 /**
- * Google Analytics Dashboard Overview Page Controller
+ * Google Analytics Dashboard Overview Page Controller.
  *
  * @author   Oliver Green <oliver@c5labs.com>
  * @license  See attached license file
@@ -43,8 +43,6 @@ class GoogleAnalytics extends DashboardPageController
 
     /**
      * Setup the view template.
-     * 
-     * @return void
      */
     public function view()
     {
@@ -53,7 +51,7 @@ class GoogleAnalytics extends DashboardPageController
         // Get the current profile data from the API and give it to the view.
         if ($this->api->hasCurrentAccessToken()) {
             $resource_path = sprintf(
-                '/management/accounts/%s/webproperties/%s/profiles/%s', 
+                '/management/accounts/%s/webproperties/%s/profiles/%s',
                 $config['account_id'], $config['property_id'], $config['profile_id']
             );
             $profile = $this->api->resource($resource_path);
