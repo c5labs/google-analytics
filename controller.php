@@ -109,6 +109,7 @@ class Controller extends Package
      */
     protected $providers = [
         'Concrete\Package\GoogleAnalytics\Src\GoogleAnalyticsServiceProvider',
+        'Concrete\Package\GoogleAnalytics\Src\GoogleAnalyticsAssetServiceProvider',
     ];
 
     /**
@@ -156,82 +157,6 @@ class Controller extends Package
 
         // Register defined service providers
         $this->registerServiceProviders();
-
-        $this->registerAssets();
-
-        // Add custom logic here that needs to be executed during CMS boot, things
-        // such as registering services, assets, etc.
-    }
-
-    protected function registerAssets()
-    {
-        $al = \Concrete\Core\Asset\AssetList::getInstance();
-
-        $al->register(
-            'javascript',
-            'ga-embed-api/core',
-            'assets/bundle.min.js',
-            [
-                'version' => '0.9.0',
-                'position' => \Concrete\Core\Asset\Asset::ASSET_POSITION_FOOTER,
-                'minify' => true,
-                'combine' => true,
-            ],
-            $this
-        );
-
-        $al->register(
-            'javascript',
-            'google-analytics/dashboard-settings',
-            'assets/settings.min.js',
-            [
-                'version' => '0.9.0',
-                'position' => \Concrete\Core\Asset\Asset::ASSET_POSITION_FOOTER,
-                'minify' => true,
-                'combine' => true,
-            ],
-            $this
-        );
-
-        $al->register(
-            'javascript',
-            'google-analytics/dashboard-overview',
-            'assets/overview.min.js',
-            [
-                'version' => '0.9.0',
-                'position' => \Concrete\Core\Asset\Asset::ASSET_POSITION_FOOTER,
-                'minify' => true,
-                'combine' => true,
-            ],
-            $this
-        );
-
-        $al->register(
-            'javascript',
-            'google-analytics/toolbar-button',
-            'assets/toolbar-button.min.js',
-            [
-                'version' => '0.9.0',
-                'position' => \Concrete\Core\Asset\Asset::ASSET_POSITION_FOOTER,
-                'minify' => true,
-                'combine' => false,
-            ],
-            $this
-        );
-
-        $al->register(
-            'css',
-            'google-analytics/core',
-            'assets/bundle.min.css',
-            [
-                'version' => '0.9.0',
-                'position' => \Concrete\Core\Asset\Asset::ASSET_POSITION_HEADER,
-                'minify' => true,
-                'combine' => true,
-            ],
-            $this
-        );
-
     }
 
     /**
