@@ -1,9 +1,19 @@
-## concrete5 Google Analytics
+#Google Analytics for concrete5
+Adds a Google Analytics overview page to your sites dashboard, realtime visitor count to the toolbar & installs tracking code. 
 
-A base to begin building your concrete5 package. The boilerplate includes demonstration core service providers and also provides a framework to use composer dependencies.
+**Requires Concrete5 5.7.5+ & PHP 5.4+**
 
-**To speed up development, you can fill in a form and [generate customised concrete5 package boilerpates](https://c5labs.com/concrete5-boilerplate) at c5labs.com.**
+##Install
+1. Unzip and copy the 'google-analytics' folder to your concrete5 installations 'packages' folder. **(check the folder name, it's important)**
+2. Login, click on the Settings icon on the right of the top bar, click 'Extend concrete5'.
+3. Click on the 'Install' button next to 'Google Analytics', follow the install instructions.
+5. Goto Dashboard -> System & Settings -> SEO & Statistics -> Google Analytics and follow the instructions to authorize your analytics account for this addon.
 
-## Usage
+## Support
+Developers should open an issue here, for all other support please file a support ticket [here](https://c5labs.com/support?addon=Google=Analytics).
 
-Tutorial to follow.
+## Change Log
+[Click here](https://github.com/c5labs/google-analytics/releases) to see the release information on GitHub for an accurate change log.
+
+##License
+See the included license file.
