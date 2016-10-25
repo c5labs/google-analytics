@@ -1,6 +1,6 @@
 <?php
 /**
- * Demo Helper Service Provider File.
+ * Google Analytics Asset Service Provider
  *
  * @author   Oliver Green <oliver@c5labs.com>
  * @license  See attached license file

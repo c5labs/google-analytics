@@ -1,36 +1,80 @@
 <?php
 /**
- * Demo Helper Service Provider File.
+ * Google Analytics API Client
  *
  * @author   Oliver Green <oliver@c5labs.com>
  * @license  See attached license file
  */
 namespace Concrete\Package\GoogleAnalytics\Src;
 
+use Exception;
+use Concrete\Core\Cache\Cache;
 use Core;
+use Illuminate\Config\Repository;
+use League\OAuth2\Client\Grant\RefreshToken;
+use League\OAuth2\Client\Token\AccessToken;
 
 defined('C5_EXECUTE') or die('Access Denied.');
 
-/**
- * Demo Helper Service Provider.
- */
 class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
 {
+    /**
+     * The current acecess token in use.
+     *
+     * @var AccessToken
+     */
     protected $access_token;
 
-    protected $scopes;
+    /**
+     * oAuth permission scopes.
+     *
+     * @var array
+     */
+    protected $scopes = [];
 
+    /**
+     * Base endpoint URI.
+     *
+     * @var string
+     */
     protected $base_url = 'https://www.googleapis.com/analytics/v3';
 
+    /**
+     * Base configuration key.
+     *
+     * @var string
+     */
     protected $config_key = 'concrete.seo.analytics.google.oauth_token';
 
+    /**
+     * Loaded configuration.
+     *
+     * @var array
+     */
     protected $config;
 
+    /**
+     * Cache instance.
+     *
+     * @var Repository
+     */
     protected $cache;
 
+    /**
+     * Default cache TTL.
+     *
+     * @var integer
+     */
     protected $cache_ttl = 3600;
 
-    public function __construct(array $options = [], array $collaborators = [], \Illuminate\Config\Repository $config, \Concrete\Core\Cache\Cache $cache)
+    /**
+     * Constructor.
+     * @param array                         $options
+     * @param array                         $collaborators
+     * @param \Illuminate\Config\Repository $config
+     * @param \Concrete\Core\Cache\Cache    $cache
+     */
+    public function __construct(array $options, array $collaborators, Repository $config, Cache $cache)
     {
         parent::__construct($options, $collaborators);
 
@@ -43,38 +87,50 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
         }
     }
 
-    public function setCurrentAccessToken($access_token)
+    /**
+     * Sets the current access token.
+     *
+     * @param AccessToken $access_token
+     */
+    public function setCurrentAccessToken(AccessToken $access_token)
     {
         $this->access_token = $access_token;
     }
 
+    /**
+     * Gets the current access token.
+     *
+     * @return AccessToken
+     */
     public function getCurrentAccessToken()
     {
         return $this->access_token;
     }
 
+    /**
+     * Have we got a valid current access token?
+     *
+     * @return boolean
+     */
     public function hasCurrentAccessToken()
     {
-        if (empty($this->access_token) || ! ($this->access_token instanceof \League\OAuth2\Client\Token\AccessToken)) {
+        if (empty($this->access_token) || ! ($this->access_token instanceof AccessToken)) {
             return false;
-        }
-
-        $data = $this->access_token->jsonSerialize();
-
-        foreach (['token_type', 'access_token', 'refresh_token', 'expires'] as $key) {
-            if (! isset($data[$key]) || empty($data[$key])) {
-                return false;
-            }
         }
 
         return true;
     }
 
+    /**
+     * Saves the current access token to configuration.
+     *
+     * @return bool
+     */
     public function saveCurrentAccessToken()
     {
         if ($this->hasCurrentAccessToken()) {
             return $this->config->save(
-                $this->config_key, 
+                $this->config_key,
                 $this->getCurrentAccessToken()->jsonSerialize()
             );
         }
@@ -82,29 +138,47 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
         return false;
     }
 
+    /**
+     * Loads the current access token from configuration.
+     *
+     * @return bool
+     */
     public function loadSavedAccessToken()
     {
         $data = $this->config->get($this->config_key, []);
 
-        $this->setCurrentAccessToken(new \League\OAuth2\Client\Token\AccessToken($data));
+        $this->setCurrentAccessToken(new AccessToken($data));
 
         return $this->hasCurrentAccessToken();
     }
 
+    /**
+     * Is there an access token saved in configuration?
+     *
+     * @return boolean
+     */
     public function hasSavedAccessToken()
     {
         return $this->config->has($this->config_key);
     }
 
+    /**
+     * Gets or refreshes an access token from Google.
+     *
+     * @param  mixed $grant
+     * @param  array  $options
+     * @return AccessToken
+     */
     public function getAccessToken($grant, array $options = [])
     {
         $token = parent::getAccessToken($grant, $options);
 
-        if ($this->hasCurrentAccessToken()) {
+        // Handle a token refresh.
+        if ($grant instanceof RefreshToken && $this->hasCurrentAccessToken()) {
             $params = $this->getCurrentAccessToken()->jsonSerialize();
             $params['expires'] = $token->getExpires();
             $params['access_token'] = $token->getToken();
-            $token = new \League\OAuth2\Client\Token\AccessToken($params);
+            $token = new AccessToken($params);
         }
 
         $this->setCurrentAccessToken($token);
@@ -112,50 +186,33 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
         return $token;
     }
 
+    /**
+     * Get the default permissions scopes.
+     * 
+     * @return array
+     */
     public function getDefaultScopes()
     {
         return $this->scopes;
     }
 
-    public function request($url, $method)
-    {
-        if (! $this->hasCurrentAccessToken()) {
-            throw new \Exception('No access token set.');
-        } elseif ($this->getCurrentAccessToken()->hasExpired()) {
-            $this->getAccessToken(new \League\OAuth2\Client\Grant\RefreshToken(), [
-                'refresh_token' => $this->getCurrentAccessToken()->getRefreshToken()
-            ]);
-
-            if (! $this->saveCurrentAccessToken()) {
-                throw new \Exception('Failed to refresh access token.');
-            }
-        }
-
-        $access_token = $this->access_token->jsonSerialize();
-
-        $cache_key = md5($method.':'.$url.':'.$access_token['access_token']);
-
-        $item = $this->cache->getItem($cache_key);
-
-        if ($item->isMiss()) {
-            $request = $this->getAuthenticatedRequest(
-                $method, $url, 
-                $access_token['access_token']
-            );
-
-            $response = $this->getResponse($request);
-
-            $item->set($response, $this->cache_ttl);
-        }
-
-        return $item->get();
-    }
-
+    /**
+     * Make a request to the analytics API endpoint.
+     * 
+     * @param  string $resource 
+     * @param  string $method   
+     * @return mixed
+     */
     public function resource($resource, $method = self::METHOD_GET)
     {
         return $this->request($this->base_url.$resource, $method);
     }
 
+    /**
+     * Request the authenticated users details.
+     * 
+     * @return mixed
+     */
     public function user()
     {
         $fields = array_merge($this->defaultUserFields, $this->userFields);
@@ -166,5 +223,51 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
         ]);
 
         return $this->request($url, self::METHOD_GET);
+    }
+
+    /**
+     * Make a request to the an endpoint.
+     * 
+     * @param  string $url    
+     * @param  string $method 
+     * @return mixed
+     */
+    public function request($url, $method)
+    {
+        // Oops, we have no token set.
+        if (! $this->hasCurrentAccessToken()) {
+            throw new Exception('No access token set.');
+        } 
+
+        // Refresh the current access token if it has expired before making the call.
+        elseif ($this->getCurrentAccessToken()->hasExpired()) {
+            $this->getAccessToken(new RefreshToken(), [
+                'refresh_token' => $this->getCurrentAccessToken()->getRefreshToken()
+            ]);
+
+            if (! $this->saveCurrentAccessToken()) {
+                throw new Exception('Failed to refresh access token.');
+            }
+        }
+
+        $access_token = $this->access_token->jsonSerialize();
+
+        // Form the cache key and get the cache item.
+        $cache_key = md5($method.':'.$url.':'.$access_token['access_token']);
+        $item = $this->cache->getItem($cache_key);
+
+        // We have no cache so make the request and cache it.
+        if ($item->isMiss()) {
+            $request = $this->getAuthenticatedRequest(
+                $method, 
+                $url,
+                $access_token['access_token']
+            );
+
+            $response = $this->getResponse($request);
+            $item->set($response, $this->cache_ttl);
+        }
+
+        return $item->get();
     }
 }

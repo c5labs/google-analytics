@@ -1,6 +1,6 @@
 <?php
 /**
- * Demo Helper Service Provider File.
+ * Google Analytics Helper Class
  *
  * @author   Oliver Green <oliver@c5labs.com>
  * @license  See attached license file
@@ -17,57 +17,110 @@ use View;
 
 defined('C5_EXECUTE') or die('Access Denied.');
 
-/**
- * Demo Helper Service Provider.
- */
 class GoogleAnalyticsHelper
 {
+    /**
+     * Configuration instance.
+     *
+     * @var Repository
+     */
     protected $config;
 
+    /**
+     * Constructor.
+     *
+     * @param Repository $config
+     */
     public function __construct(Repository $config)
     {
         $this->config = $config;
     }
 
+    /**
+     * Get this packages handle.
+     *
+     * @return string
+     */
     public function getPackageHandle()
     {
         return 'google-analytics';
     }
 
+    /**
+     * Get the addons default configuration.
+     *
+     * @param  array  $additional_defaults
+     * @return array
+     */
     public function getDefaultConfiguration($additional_defaults = [])
     {
-        $defaults = ['show_toolbar_button' => true, 'no_track_groups' => []];
+        $defaults = [
+            'show_toolbar_button' => true, 'no_track_groups' => [], 
+            'enable_dashboard_overview' => true,
+        ];
 
         return array_merge_recursive($defaults, $additional_defaults);
     }
 
+    /**
+     * Get the current configuration.
+     *
+     * @param  array  $defaults
+     * @return array
+     */
     public function getConfiguration($defaults = [])
     {
         return $this->config->get('concrete.seo.analytics.google', $defaults);
     }
 
-    public function saveConfiguration($data, $merge = true, $defaults = [])
+    /**
+     * Save a data array to configuration.
+     *
+     * @param  array  $data
+     * @param  boolean $merge
+     * @param  array   $defaults
+     * @return bool
+     */
+    public function saveConfiguration(array $data, $merge = true, $defaults = [])
     {
         if ($merge) {
             $existing = $this->getConfiguration($defaults);
             $data = array_merge($existing, $data);
         }
 
-        $this->config->save('concrete.seo.analytics.google', $data);
+        return $this->config->save('concrete.seo.analytics.google', $data);
     }
 
+    /**
+     * Save a value to a specific configuration key.
+     *
+     * @param  string $key
+     * @param  mixed $value
+     * @return bool
+     */
     public function saveConfigurationKey($key, $value)
     {
-        $this->config->save('concrete.seo.analytics.google.'.$key, $value);
+        return $this->config->save('concrete.seo.analytics.google.'.$key, $value);
     }
 
-    public function saveConfigurationKeys($data)
+    /**
+     * Save an array of keys & values to configuration.
+     * 
+     * @param  array $data 
+     * @return void
+     */
+    public function saveConfigurationKeys(array $data)
     {
         foreach ($data as $key => $value) {
             $this->saveConfigurationKey($key, $value);
         }
     }
 
+    /**
+     * Remove the current token, account, profile & property configuration.
+     * 
+     * @return void
+     */
     public function forgetAccount()
     {
         $data = $this->getConfiguration();
@@ -80,26 +133,66 @@ class GoogleAnalyticsHelper
         $this->saveConfiguration($data, false);
     }
 
-    public function getDashboardSettingsPath()
+    /**
+     * Get the dashboard settings page path.
+     * 
+     * @return string
+     */
+    public function getDashboardSettingsPagePath()
     {
-        return '';
+        return '/dashboard/system/seo/google-analytics';
     }
 
+    /**
+     * Get the dashboard overview page path.
+     * 
+     * @return string
+     */
     public function getDashboardOverviewPagePath()
     {
         return '/dashboard/google-analytics';
     }
 
-    public function getDashboardSettingsUrl()
+    /**
+     * Get the dashboard settings page URL.
+     * 
+     * @return string
+     */
+    public function getDashboardSettingsPageUrl()
     {
-        return View::url($this->getDashboardSettingsPath());
+        return View::url($this->getDashboardSettingsPagePath());
     }
 
+    /**
+     * Get the dashboard overview page URL.
+     * 
+     * @return string
+     */
     public function getDashboardOverviewPageUrl()
     {
         return View::url($this->getDashboardOverviewPagePath());
     }
 
+    /**
+     * Install the configuration page.
+     * 
+     * @return void
+     */
+    public function installConfigurationPage()
+    {
+        $package = Package::getByHandle($this->getPackageHandle());
+
+        $sp = \Concrete\Core\Page\Single::add($this->getDashboardSettingsPagePath(), $package);
+        $sp->update([
+            'cName' => 'Google Analytics',
+        ]);
+    }
+
+    /**
+     * Is the dashboard overview page enabled?
+     * 
+     * @return boolean
+     */
     public function isDashboardOverviewEnabled()
     {
         $page = Page::getByPath($this->getDashboardOverviewPagePath());
@@ -111,6 +204,11 @@ class GoogleAnalyticsHelper
         return false;
     }
 
+    /**
+     * Disable the dashboard overview page.
+     * 
+     * @return void
+     */
     public function disableDashboardOverview()
     {
         $page = Page::getByPath($this->getDashboardOverviewPagePath());
@@ -120,6 +218,11 @@ class GoogleAnalyticsHelper
         }
     }
 
+    /**
+     * Enable the dashboard overview page.
+     * 
+     * @return void
+     */
     public function enableDashboardOverview()
     {
         $page_path = $this->getDashboardOverviewPagePath();
@@ -134,6 +237,11 @@ class GoogleAnalyticsHelper
         }
     }
 
+    /**
+     * Can the current user view the dashboard overview page?
+     * 
+     * @return bool
+     */
     public function canViewAnalytics()
     {
         $page = Page::getByPath($this->getDashboardOverviewPagePath());
@@ -143,7 +251,7 @@ class GoogleAnalyticsHelper
         }
 
         if (! \User::isLoggedIn()) {
-            return false; 
+            return false;
         }
 
         $permissions = new Permissions($page);
@@ -151,6 +259,11 @@ class GoogleAnalyticsHelper
         return $permissions->canView();
     }
 
+    /**
+     * Can the current user view the toolbar button?
+     * 
+     * @return void
+     */
     public function canViewToolbarButton()
     {
         $config = $this->getConfiguration();
@@ -158,6 +271,12 @@ class GoogleAnalyticsHelper
         return $this->canViewAnalytics() && ! empty($config['show_toolbar_button']);
     }
 
+    /**
+     * Queue the addons core assets to a view.
+     * 
+     * @param  mixed $o
+     * @return void
+     */
     public function queueCoreAssets($o)
     {
         $config = $this->getConfiguration();
@@ -166,18 +285,25 @@ class GoogleAnalyticsHelper
         $o->requireAsset('css', 'google-analytics/core');
 
         $o->addFooterItem(sprintf(
-            '<script>var ga_access_token = %s, ga_profile_id = "%s";</script>', 
-            json_encode($config['oauth_token']), 
+            '<script>var ga_access_token = %s, ga_profile_id = "%s";</script>',
+            json_encode($config['oauth_token']),
             $config['profile_id']
         ));
     }
 
+    /**
+     * Guess the best profile to use from a list of profiles 
+     * by looking at the current host name.
+     * 
+     * @param  array $profiles
+     * @return array $profile
+     */
     public function bestGuessProfile($profiles)
     {
         $likenesses = [];
-                    
+
         foreach ($profiles as $key => $profile) {
-            similar_text($_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'], $profile['websiteUrl'], $percent); 
+            similar_text($_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'], $profile['websiteUrl'], $percent);
             $likenesses[(string) $percent] = $key;
         }
 
@@ -186,13 +312,24 @@ class GoogleAnalyticsHelper
         return $profiles[$likenesses[$most_similar]];
     }
 
+    /**
+     * Is tracking enabled in the configuration?
+     * 
+     * @return boolean
+     */
     public function isTrackingEnabled()
     {
         $config = $this->getConfiguration();
-        
+
         return ! empty($config['enable_tracking_code']);
     }
 
+    /**
+     * Should we track a specific user?
+     * 
+     * @param  User $user
+     * @return bool
+     */
     public function shouldTrack($user)
     {
         $groups = (new User())->getUserGroups();
@@ -203,6 +340,11 @@ class GoogleAnalyticsHelper
         return 0 === count($matches);
     }
 
+    /**
+     * Get the tracking code for the configured property.
+     * 
+     * @return string
+     */
     public function getTrackingCode()
     {
         $config = $this->getConfiguration();

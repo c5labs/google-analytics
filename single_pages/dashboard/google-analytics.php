@@ -5,7 +5,7 @@
             <div class="boxed no-profile">
                 <h3>No profile configured</h3>
                 <p>To view your analytics here you need to setup the addon with your Google Analytics profile.</p>
-                <a href="<?php echo View::url('/dashboard/system/seo/google-analytics'); ?>" class="btn btn-primary">Get Started</a>
+                <a href="<?php echo $this->controller->helper->getDashboardSettingsPageUrl(); ?>" class="btn btn-primary">Get Started</a>
             </div>
         </div>
     </div>

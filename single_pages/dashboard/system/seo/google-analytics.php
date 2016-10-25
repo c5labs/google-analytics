@@ -13,7 +13,7 @@ defined('C5_EXECUTE') or die("Access Denied.");
             <label class="control-label" style="margin-top: 10px;"><?php echo t('Access Token')?></label>
             <div class="row">
                 <div class="col-xs-6">
-                    <input id="configureAuthToken" name="concrete[seo][ga][oauth_token]" class="form-control" value="<?php echo $config['oauth_token']; ?>">
+                    <input id="configureAuthToken" name="concrete[seo][ga][auth_code]" class="form-control" value="<?php echo $config['auth_code']; ?>">
                 </div>
                 <div class="col-xs-6">
                     <a href="#" id="authorizeButton" class="btn btn-default">Get Access Token</a>
