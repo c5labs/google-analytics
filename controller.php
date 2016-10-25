@@ -108,8 +108,6 @@ class Controller extends Package
      * @var array
      */
     protected $providers = [
-        // Register your concrete5 service providers here
-        'Concrete\Package\GoogleAnalytics\Src\Providers\DemoHelperServiceProvider',
         'Concrete\Package\GoogleAnalytics\Src\GoogleAnalyticsServiceProvider',
     ];
 
