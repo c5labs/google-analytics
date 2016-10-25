@@ -147,7 +147,7 @@ gapi.analytics.ready(function() {
 
         charts[i].instance.on('error', function(response) {
             $('#'+charts[i].chart.container).html(
-                '<div class="loading"><span><i class="fa fa-spin fa-exclamation-triangle"></i>Error loading</span></div>'
+                '<div class="loading"><span><i class="fa fa-exclamation-triangle"></i>Error loading</span></div>'
             );
         });
 
@@ -180,17 +180,24 @@ gapi.analytics.ready(function() {
      * Loop through each chart creating & executing it.
      */
     for (var i in charts) {
+        // Token Expired
+        var token_expired = (window.ga_access_token.expires <= Math.round((new Date().getTime()) / 1000));
+
         // Chart Type
         if (charts[i].chart) {
             charts[i].instance = new gapi.analytics.googleCharts.DataChart(charts[i]);
             bindSuccessListener(i);
-            charts[i].instance.execute();
         } 
 
         // Custom component type
         else if(charts[i].component) {
             charts[i].instance = new gapi.analytics.ext[charts[i].component](charts[i].opts);
+        }
+
+        if (! token_expired) {
             charts[i].instance.execute();
+        } else {
+            charts[i].instance.emit('expired.token', window.ga_access_token.expires);
         }
     }
 });

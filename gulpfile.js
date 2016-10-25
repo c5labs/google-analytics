@@ -23,6 +23,7 @@ elixir(function(mix) {
 
     mix.less([
       './assets/src/toolbar-button.less',
+      './assets/src/dashboard/core.less',
       './assets/src/dashboard/overview.less',
       './assets/src/dashboard/settings.less',
     ],'./assets/bundle.min.css');

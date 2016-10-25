@@ -20,6 +20,16 @@ div#ccm-toolbar > ul > li > a .ga-icon-wrapper i.fa {
   display: none;
 }
 
+.c5labs-tagline {
+  color: #ccc;
+  text-align: center;
+  margin-top: 20px;
+}
+.c5labs-tagline img {
+  max-width: 82px;
+  vertical-align: bottom !important;
+}
+
 .ga-page {
   background-color: #f9f9f9;
 }
