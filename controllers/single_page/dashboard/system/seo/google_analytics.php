@@ -41,8 +41,13 @@ class GoogleAnalytics extends DashboardPageController
         $this->set('fh', $form_helper);
         $this->set('pageTitle', t('Google Analytics'));
 
+        $groups = new \GroupList();
+        $groups->includeAllGroups();
+        $this->set('groups', $groups->get());
+
         $this->helper->queueCoreAssets($this);
         $this->requireAsset('javascript', 'google-analytics/dashboard-settings');
+        $this->requireAsset('select2');
     }
 
     public function save_token()
@@ -76,20 +81,20 @@ class GoogleAnalytics extends DashboardPageController
                 if (0 === count($profiles)) {
                     $this->error->add(t('This account has no Google Analytics profiles.'));
                 } else {
-                    $profile = $this->helper->guessBestProfile($profiles['items']);
+                    $profile = $this->helper->bestGuessProfile($profiles['items']);
 
-                    $this->helper->saveConfigurationKeys([
+                    $config = $this->helper->getDefaultConfiguration([
                         'profile_id' => $profile['id'],
                         'account_id' => $profile['accountId'],
                         'property_id' => $profile['webPropertyId']
                     ]);
+
+                    $this->helper->saveConfigurationKeys($config);
                 }
             }
 
             if (! $this->error->has()) {
-                // Save the configuration.
                 $api->saveCurrentAccessToken();
-
                 return $this->redirect('/dashboard/system/seo/google-analytics', 'token-saved');
             }
         }
@@ -109,13 +114,17 @@ class GoogleAnalytics extends DashboardPageController
 
             if (! $this->error->has()) {
 
-                $defaults = ['show_toolbar_button' => true];
-                $keys = ['show_toolbar_button', 'enable_dashboard_overview', 'property_id', 'profile_id', 'account_id', 'enable_tracking_code'];
+                $defaults = $this->helper->getDefaultConfiguration();
+                $keys = [
+                    'show_toolbar_button', 'enable_dashboard_overview', 'property_id', 
+                    'profile_id', 'account_id', 'enable_tracking_code', 'no_track_groups',
+                ];
                 $data = array_only($_POST['concrete']['seo']['ga'], $keys);
 
                 $data['show_toolbar_button'] = isset($data['show_toolbar_button']);
                 $data['enable_dashboard_overview'] = isset($data['enable_dashboard_overview']);
                 $data['enable_tracking_code'] = isset($data['enable_tracking_code']);
+                $data['no_track_groups'] = (! isset($data['no_track_groups']) || 0 === count($data['no_track_groups'])) ? [] : $data['no_track_groups'];
 
                 if ($data['enable_dashboard_overview']) {
                     $this->helper->enableDashboardOverview();

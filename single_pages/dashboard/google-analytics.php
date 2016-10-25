@@ -74,13 +74,13 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-12 c5labs-tagline">
-            A <a href="https://c5labs.com"><img src="<?php echo DIR_REL; ?>/packages/google-analytics/assets/c5labs.png" alt="c5labs.com"></a> creation
-        </div>
-    </div>
 </div>
 <?php } ?>
+<div class="row">
+    <div class="col-sm-12 c5labs-tagline">
+        A <a href="https://c5labs.com"><img src="<?php echo DIR_REL; ?>/packages/google-analytics/assets/c5labs.png" alt="c5labs.com"></a> creation
+    </div>
+</div>
 <script>
     var ga_access_token = "<?php echo $config["oauth_token"]; ?>",
         ga_profile_id = '<?php echo $config["profile_id"]; ?>';

@@ -2,6 +2,7 @@
 // We also need to deal with refreshing expired tokens
 defined('C5_EXECUTE') or die("Access Denied.");
 ?>
+<div class="ga-settings">
 <?php if (! isset($profiles)) { ?>
 <form id="authorizeForm" method="post" action="<?php echo $view->action('save_token'); ?>">
     <?php echo $this->controller->token->output('save_token'); ?>
@@ -27,23 +28,52 @@ defined('C5_EXECUTE') or die("Access Denied.");
 <form id="configureForm" method="post" action="<?php echo $view->action('save_configuration'); ?>">
     <?php echo $this->controller->token->output('save_configuration'); ?>
     <fieldset>
-        <legend>Settings</legend>
+        <legend>Tracking Code</legend>
 
         <div class="checkbox">
-            <label for="account">
-            <input name="concrete[seo][ga][enable_tracking_code]" type="checkbox" value="1" <?php echo (! empty($config['enable_tracking_code']) ? 'checked="checked"' : ''); ?>> Add tracking code for the selected profile to the site
+            <label for="enable_tracking_code">
+            <input id="enable_tracking_code" name="concrete[seo][ga][enable_tracking_code]" type="checkbox" value="1" <?php echo (! empty($config['enable_tracking_code']) ? 'checked="checked"' : ''); ?>> Add tracking code for the selected profile to the site
+            </label>
+        </div>
+
+        <div id="no_track_groups_wrapper" style="display: none;">
+            <label>Do not track users that are in the groups</label>
+            <select id="groups" name="concrete[seo][ga][no_track_groups][]" multiple="multiple" style="width: 50%; display: block;">
+                <?php foreach ($groups as $group) { ?>
+                    <option value="<?php echo $group->getGroupId(); ?>" <?php echo (in_array($group->getGroupId(), $config['no_track_groups'])) ? 'selected="selected"' : ''; ?>>
+                        <?php echo $group->getGroupName(); ?>
+                    </option>
+                <?php } ?>
+            </select>
+            <script>
+                $(function() {
+                    $('#groups').select2();
+
+                    $('#enable_tracking_code').change(function() {
+                        var $ele = $('#no_track_groups_wrapper');
+                        $ele.hide();
+
+                        if ($(this).prop('checked')) {
+                            $ele.show();
+                        }
+                    }).trigger('change');
+                });
+            </script>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Additional Settings</legend>
+
+        <div class="checkbox">
+            <label for="enable_dashboard_overview">
+            <input id="enable_dashboard_overview" name="concrete[seo][ga][enable_dashboard_overview]" type="checkbox" value="1" <?php echo (! empty($config['enable_dashboard_overview']) ? 'checked="checked"' : ''); ?>> Enable the 'Google Analytics Overview' page in the dashboard
             </label>
         </div>
 
         <div class="checkbox">
-            <label for="account">
-            <input name="concrete[seo][ga][enable_dashboard_overview]" type="checkbox" value="1" <?php echo (! empty($config['enable_dashboard_overview']) ? 'checked="checked"' : ''); ?>> Enable the 'Google Analytics Overview' page in the dashboard
-            </label>
-        </div>
-
-        <div class="checkbox">
-            <label for="account">
-            <input name="concrete[seo][ga][show_toolbar_button]" type="checkbox" value="1" <?php echo (! empty($config['show_toolbar_button']) ? 'checked="checked"' : ''); ?>> Show real time site visitor count in toolbar
+            <label for="show_toolbar_button">
+            <input id="show_toolbar_button" name="concrete[seo][ga][show_toolbar_button]" type="checkbox" value="1" <?php echo (! empty($config['show_toolbar_button']) ? 'checked="checked"' : ''); ?>> Show real time site visitor count in toolbar
             </label>
         </div>
 
@@ -86,4 +116,5 @@ defined('C5_EXECUTE') or die("Access Denied.");
     <div class="col-sm-12 c5labs-tagline">
         A <a href="https://c5labs.com"><img src="<?php echo DIR_REL; ?>/packages/google-analytics/assets/c5labs.png" alt="c5labs.com"></a> creation
     </div>
+</div>
 </div>

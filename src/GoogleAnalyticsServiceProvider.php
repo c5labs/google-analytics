@@ -80,7 +80,7 @@ class GoogleAnalyticsServiceProvider extends Provider
             /*
              * Enable tracking.
              */
-            if ($helper->isTrackingEnabled()) {
+            if ($helper->isTrackingEnabled() && $helper->shouldTrack(new \User())) {
                 $view = \View::getInstance();
                 $view->addHeaderItem($helper->getTrackingCode());
             }

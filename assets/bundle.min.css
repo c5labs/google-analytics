@@ -23,7 +23,6 @@ div#ccm-toolbar > ul > li > a .ga-icon-wrapper i.fa {
 .c5labs-tagline {
   color: #ccc;
   text-align: center;
-  margin-top: 20px;
 }
 .c5labs-tagline img {
   max-width: 82px;
@@ -146,8 +145,21 @@ div#ccm-toolbar > ul > li > a .ga-icon-wrapper i.fa {
   margin: 30px 0;
 }
 
-fieldset {
-  margin-bottom: 40px;
+.ccm-ui .ga-settings fieldset {
+  margin-bottom: 30px;
+}
+.ccm-ui .ga-settings legend {
+  margin-bottom: 10px;
+}
+.ccm-ui .ga-settings label {
+  margin-top: 5px;
+}
+.ccm-ui .ga-settings label[for=account] {
+  margin-top: 10px;
+}
+.ccm-ui .ga-settings #tracking_code {
+  width: 50%;
+  height: 200px;
 }
 
 /*# sourceMappingURL=bundle.min.css.map */

@@ -11,6 +11,7 @@ use Concrete\Core\Config\Repository\Repository;
 use Concrete\Core\Package\Package;
 use Concrete\Core\Page\Page;
 use Concrete\Core\Permission\Checker as Permissions;
+use Concrete\Core\User\User;
 use Core;
 use View;
 
@@ -31,6 +32,13 @@ class GoogleAnalyticsHelper
     public function getPackageHandle()
     {
         return 'google-analytics';
+    }
+
+    public function getDefaultConfiguration($additional_defaults = [])
+    {
+        $defaults = ['show_toolbar_button' => true, 'no_track_groups' => []];
+
+        return array_merge_recursive($defaults, $additional_defaults);
     }
 
     public function getConfiguration($defaults = [])
@@ -164,7 +172,7 @@ class GoogleAnalyticsHelper
         ));
     }
 
-    public function guessBestProfile($profiles)
+    public function bestGuessProfile($profiles)
     {
         $likenesses = [];
                     
@@ -175,7 +183,7 @@ class GoogleAnalyticsHelper
 
         $most_similar = max(array_keys($likenesses));
 
-        return $profiles['items'][$likenesses[$most_similar]];
+        return $profiles[$likenesses[$most_similar]];
     }
 
     public function isTrackingEnabled()
@@ -183,6 +191,16 @@ class GoogleAnalyticsHelper
         $config = $this->getConfiguration();
         
         return ! empty($config['enable_tracking_code']);
+    }
+
+    public function shouldTrack($user)
+    {
+        $groups = (new User())->getUserGroups();
+        $config = $this->getConfiguration();
+
+        $matches = array_intersect($groups, $config['no_track_groups']);
+
+        return 0 === count($matches);
     }
 
     public function getTrackingCode()
