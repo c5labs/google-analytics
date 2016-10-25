@@ -82,7 +82,9 @@ gapi.analytics.ready(function() {
       if (! this.hasRendered) {
         this.container.innerHTML = template;
         this.container.querySelector('.hero-metric-value').innerHTML = this.activeUsers;
-        this.container.querySelector('.hero-sub-title').innerHTML = title;
+        if (this.container.querySelector('.hero-sub-title')) {
+          this.container.querySelector('.hero-sub-title').innerHTML = title;
+        }
         this.hasRendered = true;
       }
 
