@@ -54,6 +54,18 @@ class GoogleAnalyticsHelper
     }
 
     /**
+     * Get the addon version.
+     * 
+     * @return string
+     */
+    public function getVersion()
+    {
+        $package = Package::getByHandle($this->getPackageHandle());
+
+        return $package->getPackageVersion();
+    }
+
+    /**
      * Get the base configuration key.
      * 
      * @return string

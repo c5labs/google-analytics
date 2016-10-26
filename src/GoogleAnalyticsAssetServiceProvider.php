@@ -31,7 +31,7 @@ class GoogleAnalyticsAssetServiceProvider extends Provider
             'ga-embed-api/core',
             'assets/bundle.min.js',
             [
-                'version' => '0.9.0',
+                'version' => $helper->getVersion(),
                 'position' => Asset::ASSET_POSITION_FOOTER,
                 'minify' => true,
                 'combine' => true,
@@ -44,7 +44,7 @@ class GoogleAnalyticsAssetServiceProvider extends Provider
             'google-analytics/dashboard-settings',
             'assets/settings.min.js',
             [
-                'version' => '0.9.0',
+                'version' => $helper->getVersion(),
                 'position' => Asset::ASSET_POSITION_FOOTER,
                 'minify' => true,
                 'combine' => true,
@@ -57,7 +57,7 @@ class GoogleAnalyticsAssetServiceProvider extends Provider
             'google-analytics/dashboard-overview',
             'assets/overview.min.js',
             [
-                'version' => '0.9.0',
+                'version' => $helper->getVersion(),
                 'position' => Asset::ASSET_POSITION_FOOTER,
                 'minify' => true,
                 'combine' => true,
@@ -70,7 +70,7 @@ class GoogleAnalyticsAssetServiceProvider extends Provider
             'google-analytics/toolbar-button',
             'assets/toolbar-button.min.js',
             [
-                'version' => '0.9.0',
+                'version' => $helper->getVersion(),
                 'position' => Asset::ASSET_POSITION_FOOTER,
                 'minify' => true,
                 'combine' => false,
@@ -83,7 +83,7 @@ class GoogleAnalyticsAssetServiceProvider extends Provider
             'google-analytics/core',
             'assets/bundle.min.css',
             [
-                'version' => '0.9.0',
+                'version' => $helper->getVersion(),
                 'position' => Asset::ASSET_POSITION_HEADER,
                 'minify' => true,
                 'combine' => true,
@@ -96,7 +96,7 @@ class GoogleAnalyticsAssetServiceProvider extends Provider
             'ga-embed-api/config',
             $helper->getJavascriptConfigString(),
             [
-                'version' => '0.9.0',
+                'version' => $helper->getVersion(),
                 'position' => Asset::ASSET_POSITION_FOOTER,
                 'minify' => true,
                 'combine' => true,
@@ -109,7 +109,7 @@ class GoogleAnalyticsAssetServiceProvider extends Provider
             'google-analytics/tracking-code',
             $helper->getTrackingCode(),
             [
-                'version' => '0.9.0',
+                'version' => $helper->getVersion(),
                 'position' => Asset::ASSET_POSITION_HEADER,
                 'minify' => false,
                 'combine' => false,
