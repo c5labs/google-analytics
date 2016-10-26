@@ -73,7 +73,7 @@ class GoogleAnalytics extends DashboardPageController
         $this->set('groups', $groups->get());
 
         // Load the required assets.
-        $this->helper->queueCoreAssets($this);
+        $this->requireAsset('google-analytics/core');
         $this->requireAsset('javascript', 'google-analytics/dashboard-settings');
         $this->requireAsset('select2');
 

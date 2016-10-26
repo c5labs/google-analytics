@@ -98,7 +98,7 @@ class GoogleAnalyticsServiceProvider extends Provider
 
         if ($helper->canViewToolbarButton()) {
             $v = \View::getInstance();
-            $helper->queueCoreAssets($v);
+            $v->requireAsset('google-analytics/core');
 
             $icon = array(
                 'icon' => 'refresh fa-spin',

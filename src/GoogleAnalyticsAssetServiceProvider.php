@@ -90,5 +90,24 @@ class GoogleAnalyticsAssetServiceProvider extends Provider
             ],
             $package
         );
+
+        $al->register(
+            'javascript-inline',
+            'ga-embed-api/config',
+            $helper->getJavascriptConfigString(),
+            [
+                'version' => '0.9.0',
+                'position' => Asset::ASSET_POSITION_FOOTER,
+                'minify' => true,
+                'combine' => true,
+            ],
+            $package
+        );
+
+        $al->registerGroup('google-analytics/core', [
+            ['javascript-inline', 'ga-embed-api/config'],
+            ['javascript', 'ga-embed-api/core'],
+            ['css', 'google-analytics/core'],
+        ]);
     }
 }

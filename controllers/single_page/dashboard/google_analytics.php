@@ -62,7 +62,7 @@ class GoogleAnalytics extends DashboardPageController
         $this->set('pageTitle', t('Google Analytics - 30 Day Overview'));
 
         // Require our assets & add the header items.
-        $this->helper->queueCoreAssets($this);
+        $this->requireAsset('google-analytics/core');
         $this->requireAsset('javascript', 'google-analytics/dashboard-overview');
 
         // Add a classname to the body tag to allow proper scoping of CSS selectors.

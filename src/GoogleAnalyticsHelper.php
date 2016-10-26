@@ -288,22 +288,25 @@ class GoogleAnalyticsHelper
     }
 
     /**
-     * Queue the addons core assets to a view.
+     * Gets a javascript config string for the embed API.
      * 
-     * @param mixed $o
+     * @return string
      */
-    public function queueCoreAssets($o)
+    public function getJavascriptConfigString()
     {
         $config = $this->getConfiguration();
 
-        $o->requireAsset('javascript', 'ga-embed-api/core');
-        $o->requireAsset('css', 'google-analytics/core');
+        // Refresh the token if needed.
+        $api = Core::make('google-analytics.client');
+        if ($api->hasCurrentAccessToken() && $api->getCurrentAccessToken()->hasExpired()) {
+            $api->refreshToken();
+        }
 
-        $o->addFooterItem(sprintf(
+        return sprintf(
             '<script>var ga_access_token = %s, ga_profile_id = "%s";</script>',
             json_encode($config['oauth_token']),
             $config['profile_id']
-        ));
+        );
     }
 
     /**
