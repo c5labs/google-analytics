@@ -45,10 +45,11 @@ class GoogleAnalyticsServiceProvider extends Provider
      */
     public function registerApiClient()
     {
-        $config = $this->app->make(\Illuminate\Config\Repository::class);
-        $helper = $this->app->make('google-analytics.helper');
-
         $this->app->singleton('google-analytics.client', function () {
+            
+            $config = $this->app->make(\Illuminate\Config\Repository::class);
+            $helper = $this->app->make('google-analytics.helper');
+
             $params = array(
                 'applicationName' => 'Concrete5 Google Analytics Addon',
                 'clientId' => $config->get(

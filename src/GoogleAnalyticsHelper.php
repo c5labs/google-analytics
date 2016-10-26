@@ -299,11 +299,11 @@ class GoogleAnalyticsHelper
         // Refresh the token if needed.
         $api = Core::make('google-analytics.client');
         if ($api->hasCurrentAccessToken() && $api->getCurrentAccessToken()->hasExpired()) {
-            $api->refreshToken();
+            $api->refreshCurrentAccessToken();
         }
 
         return sprintf(
-            '<script>var ga_access_token = %s, ga_profile_id = "%s";</script>',
+            'var ga_access_token = %s, ga_profile_id = "%s";',
             json_encode($config['oauth_token']),
             $config['profile_id']
         );
