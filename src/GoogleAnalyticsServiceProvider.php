@@ -83,7 +83,7 @@ class GoogleAnalyticsServiceProvider extends Provider
 
         if ($helper->isTrackingEnabled() && $helper->shouldTrack(new User())) {
             $view = \View::getInstance();
-            $view->addHeaderItem($helper->getTrackingCode());
+            $view->requireAsset('javascript-inline', 'google-analytics/tracking-code');
         }
     }
 

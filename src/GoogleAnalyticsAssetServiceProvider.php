@@ -104,6 +104,19 @@ class GoogleAnalyticsAssetServiceProvider extends Provider
             $package
         );
 
+        $al->register(
+            'javascript-inline',
+            'google-analytics/tracking-code',
+            $helper->getTrackingCode(),
+            [
+                'version' => '0.9.0',
+                'position' => Asset::ASSET_POSITION_HEADER,
+                'minify' => false,
+                'combine' => false,
+            ],
+            $package
+        );
+
         $al->registerGroup('google-analytics/core', [
             ['javascript-inline', 'ga-embed-api/config'],
             ['javascript', 'ga-embed-api/core'],
