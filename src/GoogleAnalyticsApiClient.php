@@ -139,6 +139,28 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
     }
 
     /**
+     * Refreshes the current access token.
+     * 
+     * @return bool
+     */
+    public function refreshCurrentAccessToken()
+    {
+        if ($this->hasCurrentAccessToken()) {
+            $this->getAccessToken(new RefreshToken(), [
+                'refresh_token' => $this->getCurrentAccessToken()->getRefreshToken(),
+            ]);
+
+            if (!$this->saveCurrentAccessToken()) {
+                throw new Exception('Failed to refresh access token.');
+            }
+
+            return $this->hasCurrentAccessToken();
+        }
+
+        return false;
+    }
+
+    /**
      * Loads the current access token from configuration.
      *
      * @return bool
@@ -244,13 +266,7 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
 
         // Refresh the current access token if it has expired before making the call.
         elseif ($this->getCurrentAccessToken()->hasExpired()) {
-            $this->getAccessToken(new RefreshToken(), [
-                'refresh_token' => $this->getCurrentAccessToken()->getRefreshToken(),
-            ]);
-
-            if (!$this->saveCurrentAccessToken()) {
-                throw new Exception('Failed to refresh access token.');
-            }
+            $this->refreshCurrentAccessToken();
         }
 
         $access_token = $this->access_token->jsonSerialize();
