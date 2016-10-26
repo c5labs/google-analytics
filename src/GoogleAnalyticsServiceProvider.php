@@ -45,11 +45,20 @@ class GoogleAnalyticsServiceProvider extends Provider
      */
     public function registerApiClient()
     {
+        $config = $this->app->make(\Illuminate\Config\Repository::class);
+        $helper = $this->app->make('google-analytics.helper');
+
         $this->app->singleton('google-analytics.client', function () {
             $params = array(
                 'applicationName' => 'Concrete5 Google Analytics Addon',
-                'clientId' => '460634522959-js9hc2psn2toa9fcel4hlntuok0oposn.apps.googleusercontent.com',
-                'clientSecret' => 'mNb3AlCwAvXm2QOfl7qS7oq_',
+                'clientId' => $config->get(
+                    $helper->getConfigurationKey('client_id'), 
+                    '460634522959-js9hc2psn2toa9fcel4hlntuok0oposn.apps.googleusercontent.com'
+                ),
+                'clientSecret' => $config->get(
+                    $helper->getConfigurationKey('client_secret'), 
+                    'mNb3AlCwAvXm2QOfl7qS7oq_'
+                ),
                 'redirectUri' => 'urn:ietf:wg:oauth:2.0:oob',
                 'scopes' => [
                     'https://www.googleapis.com/auth/analytics.readonly',
@@ -58,8 +67,6 @@ class GoogleAnalyticsServiceProvider extends Provider
                     'profile',
                 ],
             );
-
-            $config = $this->app->make(\Illuminate\Config\Repository::class);
             $cache = $this->app->make(\Concrete\Core\Cache\Level\ExpensiveCache::class);
 
             return new GoogleAnalyticsApiClient($params, [], $config, $cache);
