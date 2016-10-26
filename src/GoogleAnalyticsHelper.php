@@ -27,6 +27,13 @@ class GoogleAnalyticsHelper
     protected $config;
 
     /**
+     * Configuration base key.
+     * 
+     * @var string
+     */
+    protected $config_key = 'concrete.seo.analytics.google';
+
+    /**
      * Constructor.
      *
      * @param Repository $config
@@ -44,6 +51,22 @@ class GoogleAnalyticsHelper
     public function getPackageHandle()
     {
         return 'google-analytics';
+    }
+
+    /**
+     * Get the base configuration key.
+     * 
+     * @return string
+     */
+    public function getConfigurationKey($key = null)
+    {
+        $base = $this->config_key;
+
+        if ($key) {
+            $base .= '.'.$key;
+        }
+
+        return $base;
     }
 
     /**
@@ -72,7 +95,7 @@ class GoogleAnalyticsHelper
      */
     public function getConfiguration($defaults = [])
     {
-        return $this->config->get('concrete.seo.analytics.google', $defaults);
+        return $this->config->get($this->getConfigurationKey(), $defaults);
     }
 
     /**
@@ -91,7 +114,7 @@ class GoogleAnalyticsHelper
             $data = array_merge($existing, $data);
         }
 
-        return $this->config->save('concrete.seo.analytics.google', $data);
+        return $this->config->save($this->getConfigurationKey(), $data);
     }
 
     /**
@@ -104,7 +127,7 @@ class GoogleAnalyticsHelper
      */
     public function saveConfigurationKey($key, $value)
     {
-        return $this->config->save('concrete.seo.analytics.google.'.$key, $value);
+        return $this->config->save($this->getConfigurationKey($key), $value);
     }
 
     /**
