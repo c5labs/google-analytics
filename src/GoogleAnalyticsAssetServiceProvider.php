@@ -34,7 +34,7 @@ class GoogleAnalyticsAssetServiceProvider extends Provider
                 'version' => $helper->getVersion(),
                 'position' => Asset::ASSET_POSITION_FOOTER,
                 'minify' => true,
-                'combine' => true,
+                'combine' => false,
             ],
             $package
         );
@@ -98,8 +98,8 @@ class GoogleAnalyticsAssetServiceProvider extends Provider
             [
                 'version' => $helper->getVersion(),
                 'position' => Asset::ASSET_POSITION_FOOTER,
-                'minify' => true,
-                'combine' => true,
+                'minify' => false,
+                'combine' => false,
             ],
             $package
         );
