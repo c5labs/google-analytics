@@ -3,7 +3,7 @@
 defined('C5_EXECUTE') or die("Access Denied.");
 ?>
 <div class="ga-settings">
-<?php if (! isset($profiles)) { ?>
+<?php if (! isset($profiles) || 0 === count($profiles['items'])) { ?>
 <form id="authorizeForm" method="post" action="<?php echo $view->action('save_token'); ?>">
     <?php echo $this->controller->token->output('save_token'); ?>
     <fieldset>

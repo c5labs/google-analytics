@@ -116,7 +116,7 @@ class GoogleAnalytics extends DashboardPageController
                 $profiles = $this->api->resource('/management/accounts/~all/webproperties/~all/profiles');
 
                 // The authorised account has no profiles.
-                if (0 === count($profiles)) {
+                if (0 === count($profiles['items'])) {
                     $this->error->add(t('This account has no Google Analytics profiles.'));
                 }
 
