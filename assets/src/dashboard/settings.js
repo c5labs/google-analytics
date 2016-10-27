@@ -27,7 +27,11 @@ $(function() {
     /*
      * Enable save configuration button after token is added.
      */
-    $('#configureAuthToken').keypress(function() {
-        $('#saveTokenButton').removeClass('disabled');
+    $('#configureAuthToken').on('keypress change blur', function() {
+        if ($(this).val().length > 0) {
+            $('#saveTokenButton').removeClass('disabled');
+        } else {
+            $('#saveTokenButton').addClass('disabled');
+        }
     });
 });
