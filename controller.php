@@ -45,7 +45,7 @@ class Controller extends Package
      * 
      * @var string
      */
-    protected $pkgVersion = '0.9.2';
+    protected $pkgVersion = '0.9.3';
 
     /**
      * The packages name.
