@@ -285,8 +285,10 @@ class GoogleAnalyticsApiClient extends \League\OAuth2\Client\Provider\Google
 
             $response = $this->getResponse($request);
             $item->set($response, $this->cache_ttl);
+        } else {
+            $response = $item->get();
         }
 
-        return $item->get();
+        return $response;
     }
 }
