@@ -14,6 +14,8 @@ use Concrete\Core\Permission\Checker as Permissions;
 use Concrete\Core\User\User;
 use Core;
 use View;
+use Exception;
+use Log;
 
 defined('C5_EXECUTE') or die('Access Denied.');
 
@@ -286,7 +288,13 @@ class GoogleAnalyticsHelper
 
         $permissions = new Permissions($page);
 
-        return $permissions->canView();
+        if (method_exists($permissions, 'canView')) {
+            return $permissions->canView();
+        } elseif(method_exists($permissions, 'canViewPage')) {
+            return $permissions->canViewPage();
+        }
+
+        return false;
     }
 
     /**
@@ -311,7 +319,11 @@ class GoogleAnalyticsHelper
         // Refresh the token if needed.
         $api = Core::make('google-analytics.client');
         if ($api->hasCurrentAccessToken() && $api->getCurrentAccessToken()->hasExpired()) {
-            $api->refreshCurrentAccessToken();
+            try {
+                $api->refreshCurrentAccessToken();
+            } catch (Exception $ex) {
+                Log::addEntry('Google Analytics: Could not refresh access token.');
+            }
         }
 
         return sprintf(
